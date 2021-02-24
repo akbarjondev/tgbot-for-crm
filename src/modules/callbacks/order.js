@@ -4,37 +4,46 @@ const CONFIG = require('./../../config/config.js')
 module.exports = async (msg) => {
 	
 	try {
-		// statements
+		const allReservedProducts = await fetch(`${CONFIG.HOST}/bot/products`)
+
+    const { status, data } = await allReservedProducts.json()
+
+    if(status === 200) {
+
+      let inlineKeyboard = []
+      let buttonsRow = []
+
+      for (let i = 0; i < data.length; i++) {
+        buttonsRow.push({ text: data[i].product_name + ' [' + data[i].reserve_product_count + ']', callback_data: data[i].product_id })
+        
+        if(buttonsRow.length === 3) {
+          inlineKeyboard.push([...buttonsRow])
+          buttonsRow.length = 0
+        }
+
+        if((data.length - 1) === i) {
+          inlineKeyboard.push([...buttonsRow])
+        }
+      }
+
+    	const text = `Taomlardan birni tanlang <a href="https://telegra.ph/Xayrli-tong-02-24">​</a>`
+
+    	bot.sendMessage(
+    		msg.chat.id,
+    		text,
+    		{
+      		parse_mode: 'html',
+      		reply_markup: JSON.stringify({
+      			inline_keyboard: inlineKeyboard
+      		})
+    		}
+    	)
+    }
+
+
 	} catch(e) {
-		// statements
-		console.log(e);
+		console.log(e)
 	}
 
-	const text = `Taomlardan birni tanlang <a href="https://telegra.ph/Xayrli-tong-02-24">​</a>`
-
-	bot.sendMessage(
-		msg.chat.id,
-		text,
-		{
-  		parse_mode: 'html',
-  		reply_markup: JSON.stringify({
-  			inline_keyboard: [
-  				[
-  					{ text: 'Sudak', callback_data: 'su' },
-  					{ text: 'KFC', callback_data: 'kfc' },
-  					{ text: 'Teftel', callback_data: 'tef' }
-  				],
-  				[
-  					{ text: "Go'shtsay", callback_data: 'gosh' },
-  					{ text: "Qo'ziqorinli tovuq", callback_data: 'qt' },
-  					{ text: 'Kiyev kotleti', callback_data: 'kk' }
-  				],
-  				[
-  					{ text: "Pishloq go'shtli kotlet", callback_data: 'pgk' },
-  				],
-  			]
-  		})
-		}
-	)
 
 }
