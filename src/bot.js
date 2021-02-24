@@ -1,4 +1,5 @@
 const fetch = require('node-fetch')
+const { timeConverter } = require('./lib/lib.js')
 
 // callbacks
 const callbackStart = require('./modules/callbacks/start.js')
@@ -15,9 +16,10 @@ const run = (bot) => {
 
 	bot.onText(/🛒 Buyurtma qilish/, callbackOrder)
 
-	// test
-	bot.on('message', (msg) => {
-		console.log(msg)
+	// callback
+	bot.on('callback_query', (cb) => {
+		console.log(timeConverter(cb.message.date))
+
 	})
 }
 
