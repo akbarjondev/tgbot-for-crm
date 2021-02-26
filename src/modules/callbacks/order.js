@@ -14,7 +14,7 @@ module.exports = async (msg) => {
       let buttonsRow = []
 
       for (let i = 0; i < data.length; i++) {
-        buttonsRow.push({ text: data[i].product_name + ' [' + data[i].reserve_product_count + ']', callback_data: data[i].product_id })
+        buttonsRow.push({ text: data[i].product_name, callback_data: 'product:' + data[i].product_id })
         
         if(buttonsRow.length === 3) {
           inlineKeyboard.push([...buttonsRow])
