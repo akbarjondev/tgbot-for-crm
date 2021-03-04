@@ -6,6 +6,7 @@ const callbackStart = require('./modules/callbacks/start.js')
 const callbackOrder = require('./modules/callbacks/order.js')
 const callbackContact = require('./modules/callbacks/contact.js')
 const callbackQuery = require('./modules/callbacks/callbackQuery.js')
+const locationCallbackQuery = require('./modules/callbacks/locationCallbackQuery.js')
 
 // init bot
 const run = (bot) => {
@@ -19,6 +20,9 @@ const run = (bot) => {
 
 	// callback
 	bot.on('callback_query', callbackQuery)
+
+	//location
+	bot.on('location', locationCallbackQuery)
 }
 
 module.exports.run = run
