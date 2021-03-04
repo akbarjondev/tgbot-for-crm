@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const CONFIG = require('./../../config/config.js')
+const callbackContact = require('./contact.js')
 
 module.exports = async (res) => {
 
@@ -22,7 +23,24 @@ module.exports = async (res) => {
       body: JSON.stringify(body)
     })
 
-    console.log(await addUserLocation.json())
+    const { status } = await addUserLocation.json()
+
+    if(status === 200) {
+    	bot.sendMessage(
+		  	res.from.id, 
+		  	`<b>Buyurtmangiz qabul qilindi</b>✅\nBiz yo'ldamiz 😎🛵`,
+		  	{
+        	parse_mode: 'html',
+		  		reply_markup: {
+		  			keyboard: [
+		  				[{ text: '🛒 Buyurtma qilish' }],
+		  				[{ text: '🛍 Buyurtmalarim' }]
+		  			],
+		  			resize_keyboard: true
+		  		}
+		  	}
+		  )
+    }
 
 	} catch(e) {
 		console.log(e)

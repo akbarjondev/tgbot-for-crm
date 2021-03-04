@@ -45,7 +45,7 @@ const makeOrder = async (chatId, CONFIG) => {
 }
 
 const addOrder = async (cb, CONFIG, identifier, product_id) => {
-  console.log(cb)
+
   try {
     /*qaysi mijoz ekanligini bilib olishimiz kerak*/
     const oneClient = await fetch(`${CONFIG.HOST}/bot/client/${cb.from.id}`)
