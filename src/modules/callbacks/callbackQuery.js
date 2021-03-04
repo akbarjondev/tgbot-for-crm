@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 const CONFIG = require('./../../config/config.js')
 const KEYBOARDS = require('./keyboards/keyboards.js')
-const { makeOrder } = require('./../../lib/lib.js')
+const { makeOrder, addOrder } = require('./../../lib/lib.js')
 
 module.exports = async (cb) => {
 
@@ -27,29 +27,7 @@ module.exports = async (cb) => {
 			)
 
 		} else if (key === 'order_quantity') {
-
-			console.log(cb)
-
-			const oneClient = await fetch(`${CONFIG.HOST}/bot/client/${cb.from.id}`)
-
-			try {
-				const addNewOrder = await fetch(`${CONFIG.HOST}/bot/order`, {
-					method: 'post',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: {
-						sale_product_count: identifier, 
-						product_id: product_id, 
-						client_id: await oneClient.json(), 
-						// location_id
-					}
-				})
-			} catch(e) {
-				// statements
-				console.log(e);
-			}
-			
+			addOrder(cb, CONFIG, identifier, product_id)
 		} else if (key === 'prev_menu') {
 			makeOrder(cb.message.chat.id, CONFIG)
 		}

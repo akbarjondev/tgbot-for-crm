@@ -1,23 +1,5 @@
 const fetch = require('node-fetch')
 
-function timeConverter(UNIX_timestamp){
-  let a = new Date(UNIX_timestamp * 1000)
-  a.toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' })
-  let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-  let year = a.getFullYear()
-  let monthLetter = months[a.getMonth()]
-  let month = a.getMonth()
-  let date = a.getDate()
-  let hour = a.getHours()
-  let min = a.getMinutes()
-  let sec = a.getSeconds()
-  let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec 
-
-  let customTime = `${year}-${(String(month + 1)).padStart(2, 0)}-${date} ${hour}-${min}-${sec}`
-
-  return a
-}
-
 const makeOrder = async (chatId, CONFIG) => {
 
   try {
@@ -62,7 +44,50 @@ const makeOrder = async (chatId, CONFIG) => {
   }
 }
 
+const addOrder = async (cb, CONFIG, identifier, product_id) => {
+  console.log(cb)
+  try {
+    /*qaysi mijoz ekanligini bilib olishimiz kerak*/
+    const oneClient = await fetch(`${CONFIG.HOST}/bot/client/${cb.from.id}`)
+    const oneClientRes = await oneClient.json()
+
+    const body = {
+      sale_product_count: Number(identifier), 
+      product_id: product_id, 
+      client_id: oneClientRes.data.client_id, 
+      location_id: 0 //-- keyinchalik yuboriladi, qachonki user location yuborsa
+    }
+
+    /*buyurtmani qo'shish*/
+    const addNewOrder = await fetch(`${CONFIG.HOST}/bot/order`, {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+
+    /* location so'raymiz */
+    bot.sendMessage(
+      cb.from.id,
+      '<b>Joylashuvingizni yuboring</b> 🗺📍',
+      {
+        parse_mode: 'html',
+        reply_markup: JSON.stringify({
+          keyboard: [
+            [{ text: 'Joylashuvni yuborish 📍', request_location: true }]
+          ],
+          resize_keyboard: true
+        })
+      }
+    )
+
+
+  } catch(e) {
+    console.log(e)
+  }
+
+}
+
 module.exports = {
-  timeConverter,
-  makeOrder
+  makeOrder,
+  addOrder
 }
