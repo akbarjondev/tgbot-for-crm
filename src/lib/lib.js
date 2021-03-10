@@ -1,6 +1,32 @@
 const fetch = require('node-fetch')
 
-const makeOrder = async (chatId, CONFIG) => {
+const KEYBOARDS = require('./../modules/callbacks/keyboards/keyboards.js')
+
+const sendProduct = async (cb, CONFIG, identifier) => {
+  try {
+    
+    const selectedProduct = await fetch(`${CONFIG.HOST}/bot/product/${identifier}`)
+      
+    const { data: [ product ] } = await selectedProduct.json()
+
+    const caption = `Tarkibi: ${product.product_info}\nNarxi: ${product.product_price} so'm` + '\n\n<b>Miqdorni tanlang</b>'
+
+    bot.sendPhoto(
+      cb.message.chat.id,
+      product.product_image,
+      {
+        caption: caption,
+        reply_markup: KEYBOARDS.replyMarkupOrderQuantity(product.product_id),
+        parse_mode: 'html'
+      }
+    )
+
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+const makeOrder = async (chatId, CONFIG, inputText = '') => {
 
   try {
     const allReservedProducts = await fetch(`${CONFIG.HOST}/bot/products`)
@@ -25,7 +51,7 @@ const makeOrder = async (chatId, CONFIG) => {
         }
       }
 
-      const text = `Taomlardan birni tanlang <a href="https://telegra.ph/Xayrli-tong-02-24">​</a>`
+      const text = `${inputText ? inputText : '<b>Taomlardan birni tanlang</b> 👇'} <a href="https://telegra.ph/Xayrli-tong-02-24">​</a>`
 
       bot.sendMessage(
         chatId,
@@ -65,21 +91,81 @@ const addOrder = async (cb, CONFIG, identifier, product_id) => {
       body: JSON.stringify(body)
     })
 
-    /* location so'raymiz */
+    const allOrdersForBasket = await fetch(`${CONFIG.HOST}/bot/orders/${ oneClientRes.data.client_id }`)
+    
+    const { data: allOrders } = await allOrdersForBasket.json()
+
+    let basketText = ''
+    let sum = 0
+    let product_count = 0
+
+    allOrders.forEach(o => {
+
+      sum += (o.product_price * o.sale_product_count)
+
+      product_count += o.sale_product_count
+
+      basketText += `${o.sale_product_count} ta - ${o.product_name}\n`
+
+    })
+
     bot.sendMessage(
       cb.from.id,
-      '<b>Joylashuvingizni yuboring</b> 🗺📍',
+      `
+        <b>🛒 Savatchada:</b>\n\n${basketText}\n<b>Mahsulotlar:</b> ${sum} so'm\n<b>Yetkazib berish:</b> ${product_count >= 5 ? 'bepul' : '10 000 so\'m'}\n<b>Jami:</b> ${product_count >= 5 ? sum : sum + 10000} so'm
+      `,
       {
         parse_mode: 'html',
         reply_markup: JSON.stringify({
-          keyboard: [
-            [{ text: 'Joylashuvni yuborish 📍', request_location: true }]
-          ],
-          resize_keyboard: true
+          inline_keyboard: [
+            [{ text: '🚖 Buyurtma qilaman', callback_data: 'lets_order' }],
+            [
+              { text: '🏃 Yana qo\'shaman', callback_data: 'continue_buying' },
+              { text: '🧹 Savatni bo\'shat', callback_data: 'clean_basket' }
+            ],
+          ]
         })
       }
     )
 
+    /* location so'raymiz */
+    // bot.sendMessage(
+    //   cb.from.id,
+    //   '<b>Joylashuvingizni yuboring</b> 🗺📍',
+    //   {
+    //     parse_mode: 'html',
+    //     reply_markup: JSON.stringify({
+    //       keyboard: [
+    //         [{ text: 'Joylashuvni yuborish 📍', request_location: true }]
+    //       ],
+    //       resize_keyboard: true
+    //     })
+    //   }
+    // )
+
+
+  } catch(e) {
+    console.log(e)
+  }
+
+}
+
+const deleteOrder = async (chatId, CONFIG) => {
+  try {
+    
+    const oneClient = await fetch(`${CONFIG.HOST}/bot/client/${chatId}`)
+    const { data } = await oneClient.json()
+
+    // delete client orders in the basket
+    const deleteOrders = await fetch(`${CONFIG.HOST}/bot/order`, {
+      method: 'delete',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: data.client_id
+      })
+    })
+
+    console.log(await deleteOrders.json())
 
   } catch(e) {
     console.log(e)
@@ -89,5 +175,7 @@ const addOrder = async (cb, CONFIG, identifier, product_id) => {
 
 module.exports = {
   makeOrder,
-  addOrder
+  addOrder,
+  sendProduct,
+  deleteOrder,
 }
