@@ -128,44 +128,45 @@ const addOrder = async (cb, CONFIG, identifier, product_id) => {
       }
     )
 
-    /* location so'raymiz */
-    // bot.sendMessage(
-    //   cb.from.id,
-    //   '<b>Joylashuvingizni yuboring</b> 🗺📍',
-    //   {
-    //     parse_mode: 'html',
-    //     reply_markup: JSON.stringify({
-    //       keyboard: [
-    //         [{ text: 'Joylashuvni yuborish 📍', request_location: true }]
-    //       ],
-    //       resize_keyboard: true
-    //     })
-    //   }
-    // )
-
-
   } catch(e) {
     console.log(e)
   }
 
 }
 
-const deleteOrder = async (chatId, CONFIG) => {
+const makeStatusOrder = async (chatId, CONFIG, statusCode, fromStatus) => {
   try {
     
     const oneClient = await fetch(`${CONFIG.HOST}/bot/client/${chatId}`)
-    const { data } = await oneClient.json()
+    const { data: client } = await oneClient.json()
 
     // delete client orders in the basket
     const deleteOrders = await fetch(`${CONFIG.HOST}/bot/order`, {
-      method: 'delete',
+      method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        user_id: data.client_id
+        user_id: client.client_id,
+        status: statusCode,
+        from_status: fromStatus
       })
     })
 
-    console.log(await deleteOrders.json())
+    /* location so'raymiz */
+    if(statusCode === 1) {
+      bot.sendMessage(
+        chatId,
+        '<b>Joylashuvingizni yuboring</b> 🗺📍',
+        {
+          parse_mode: 'html',
+          reply_markup: JSON.stringify({
+            keyboard: [
+              [{ text: 'Joylashuvni yuborish 📍', request_location: true }]
+            ],
+            resize_keyboard: true
+          })
+        }
+      )
+    }
 
   } catch(e) {
     console.log(e)
@@ -177,5 +178,5 @@ module.exports = {
   makeOrder,
   addOrder,
   sendProduct,
-  deleteOrder,
+  makeStatusOrder,
 }
