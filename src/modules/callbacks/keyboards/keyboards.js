@@ -21,6 +21,15 @@ const replyMarkupOrderQuantity = (product_id = 0) => ({
 	]
 })
 
+const mainMenu = {
+	keyboard: [
+		[{ text: '🛒 Buyurtma qilish' }],
+		[{ text: '🛍 Buyurtmalarim' }, { text: '⚙ Sozlamalar' }]
+	],
+	resize_keyboard: true
+}
+
 module.exports = {
 	replyMarkupOrderQuantity,
+	mainMenu
 }
