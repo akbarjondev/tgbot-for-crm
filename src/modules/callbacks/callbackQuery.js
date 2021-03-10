@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 
 const CONFIG = require('./../../config/config.js')
-const { makeOrder, addOrder, sendProduct, deleteOrder } = require('./../../lib/lib.js')
+const { makeOrder, addOrder, sendProduct, makeStatusOrder } = require('./../../lib/lib.js')
 
 module.exports = async (cb) => {
 	const [ key, identifier, , product_id ] = cb.data.split(':')
@@ -25,7 +25,7 @@ module.exports = async (cb) => {
 		
 		} else if (key === 'clean_basket') {
 
-			deleteOrder(cb.from.id, CONFIG)
+			makeStatusOrder(cb.from.id, CONFIG, 5, 0)
 
 			makeOrder(cb.from.id, CONFIG, 'Savatcha tozalandi! 🙄\n\n<b>Yana taomnomadan tanlashingiz mumkin</b> 😊')
 
@@ -33,7 +33,12 @@ module.exports = async (cb) => {
 
 			makeOrder(cb.from.id, CONFIG)
 						
+		} else if(key === 'lets_order') {
+
+			makeStatusOrder(cb.from.id, CONFIG, 1, 0)
+
 		}
+
 	} catch(e) {
 		console.log(e)
 	}
