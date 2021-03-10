@@ -1,35 +1,38 @@
 const fetch = require('node-fetch')
+
 const CONFIG = require('./../../config/config.js')
-const KEYBOARDS = require('./keyboards/keyboards.js')
-const { makeOrder, addOrder } = require('./../../lib/lib.js')
+const { makeOrder, addOrder, sendProduct, deleteOrder } = require('./../../lib/lib.js')
 
 module.exports = async (cb) => {
-
 	const [ key, identifier, , product_id ] = cb.data.split(':')
 
-	try {
-		const selectedProduct = await fetch(`${CONFIG.HOST}/bot/product/${identifier}`)
+	// eski tarixni tozalaymiz
+	bot.deleteMessage(cb.from.id, cb.message.message_id)
 
-		const { data: [ product ] } = await selectedProduct.json()
+	try {
 
 		if(key === 'product') {
 
-			const caption = `Tarkibi: ${product.product_info}\nNarxi: ${product.product_price} so'm` + '\n\n<b>Miqdorni tanlang</b>'
-
-			bot.sendPhoto(
-				cb.message.chat.id,
-				product.product_image,
-				{
-					caption: caption,
-					reply_markup: KEYBOARDS.replyMarkupOrderQuantity(product.product_id),
-					parse_mode: 'html'
-				}
-			)
-
+			sendProduct(cb, CONFIG, identifier)
+		
 		} else if (key === 'order_quantity') {
+		
 			addOrder(cb, CONFIG, identifier, product_id)
+		
 		} else if (key === 'prev_menu') {
-			makeOrder(cb.message.chat.id, CONFIG)
+		
+			makeOrder(cb.from.id, CONFIG)
+		
+		} else if (key === 'clean_basket') {
+
+			deleteOrder(cb.from.id, CONFIG)
+
+			makeOrder(cb.from.id, CONFIG, 'Savatcha tozalandi! 🙄\n\n<b>Yana taomnomadan tanlashingiz mumkin</b> 😊')
+
+		} else if (key === 'continue_buying') {
+
+			makeOrder(cb.from.id, CONFIG)
+						
 		}
 	} catch(e) {
 		console.log(e)
