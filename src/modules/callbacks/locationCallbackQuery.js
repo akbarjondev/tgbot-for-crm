@@ -1,6 +1,7 @@
 const fetch = require('node-fetch')
 const CONFIG = require('./../../config/config.js')
 const callbackContact = require('./contact.js')
+const KEYBOARDS = require('./keyboards/keyboards.js')
 
 module.exports = async (res) => {
 
@@ -32,10 +33,7 @@ module.exports = async (res) => {
 		  	{
         	parse_mode: 'html',
 		  		reply_markup: {
-		  			keyboard: [
-		  				[{ text: '🛒 Buyurtma qilish' }],
-		  				[{ text: '🛍 Buyurtmalarim' }]
-		  			],
+		  			keyboard: KEYBOARDS.mainMenu,
 		  			resize_keyboard: true
 		  		}
 		  	}

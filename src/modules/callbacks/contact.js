@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const CONFIG = require('./../../config/config.js')
+const KEYBOARDS = require('./keyboards/keyboards.js')
 
 module.exports = async (msg) => {
 	if(msg.contact.user_id === msg.chat.id) {
@@ -24,13 +25,7 @@ module.exports = async (msg) => {
 	  	msg.chat.id, 
 	  	'Bulardan birini tanlang:',
 	  	{
-	  		reply_markup: {
-	  			keyboard: [
-	  				[{ text: '🛒 Buyurtma qilish' }],
-	  				[{ text: '🛍 Buyurtmalarim' }]
-	  			],
-	  			resize_keyboard: true
-	  		}
+	  		reply_markup: KEYBOARDS.mainMenu
 	  	}
 	  )
 
