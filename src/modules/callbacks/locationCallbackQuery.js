@@ -29,7 +29,7 @@ module.exports = async (res) => {
     if(status === 200) {
     	bot.sendMessage(
 		  	res.from.id, 
-		  	`<b>Buyurtmangiz qabul qilindi</b>✅`,
+		  	`✅ <b>Buyurtmangiz qabul qilindi. Tez orada siz bilan bog'lanamiz.</b>`,
 		  	{
         	parse_mode: 'html',
 		  		reply_markup: KEYBOARDS.mainMenu

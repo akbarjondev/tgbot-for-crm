@@ -16,7 +16,7 @@ const replyMarkupOrderQuantity = (product_id = 0) => ({
 			{ text: `9`, callback_data: `order_quantity:9:product_id:${product_id}` }, 
 		],
 		[
-			{ text: `🏠 Bosh menyu`, callback_data: `prev_menu:0` }, 
+			{ text: `📋🍱 Taomnoma`, callback_data: `prev_menu:0` }, 
 		]
 	]
 })

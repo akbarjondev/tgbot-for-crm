@@ -9,7 +9,7 @@ const sendProduct = async (cb, CONFIG, identifier) => {
       
     const { data: [ product ] } = await selectedProduct.json()
 
-    const caption = `Tarkibi: ${product.product_info}\nNarxi: ${product.product_price} so'm` + '\n\n<b>Miqdorni tanlang</b>'
+    const caption = `🍱🥙🧆 <b>- ${product.product_name.toUpperCase()} -</b> 🍲🍅🥒\n<b>Tarkibi:</b> ${product.product_info}\n<b>Narxi:</b> ${product.product_price} so'm` + '\n\n<b>Miqdorni tanlang</b>'
 
     bot.sendPhoto(
       cb.message.chat.id,
@@ -109,10 +109,13 @@ const addOrder = async (cb, CONFIG, identifier, product_id) => {
 
     })
 
+    // delivery price ni aslida bazadan olib kelishimiz kerak
+    let deliveryPrice = 12000
+
     bot.sendMessage(
       cb.from.id,
       `
-        <b>🛒 Savatchada:</b>\n\n${basketText}\n<b>Mahsulotlar:</b> ${sum} so'm\n<b>Yetkazib berish:</b> ${product_count >= 5 ? 'bepul' : '10 000 so\'m'}\n<b>Jami:</b> ${product_count >= 5 ? sum : sum + 10000} so'm
+        <b>🛒 Savatchada:</b>\n\n${basketText}\n<b>Mahsulotlar:</b> ${sum} so'm\n<b>Yetkazib berish:</b> ${product_count >= 5 ? 'bepul' : '12000 so\'m'}\n<b>Jami:</b> ${product_count >= 5 ? sum : sum + deliveryPrice} so'm
       `,
       {
         parse_mode: 'html',
