@@ -39,6 +39,7 @@ const makeOrder = async (chatId, CONFIG, inputText = '') => {
       let buttonsRow = []
 
       for (let i = 0; i < data.length; i++) {
+
         buttonsRow.push({ text: data[i].product_name, callback_data: 'product:' + data[i].product_id })
         
         if(buttonsRow.length === 3) {
